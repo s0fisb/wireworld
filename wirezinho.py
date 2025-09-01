@@ -1,7 +1,6 @@
 import pyxel
 import copy  # para copiar a matriz
 
-
 # Estados
 VAZIO = 0
 FIO = 1
@@ -26,6 +25,9 @@ class WireWorld:
         self.mundo = [[VAZIO for _ in range(largura)] for _ in range(altura)]
         self.estado_inicial = None
         self.modo_simulacao = False
+
+        # contador de frames (para desacelerar a simulação)
+        self.frame_count = 0
 
         # inicializa pyxel
         pyxel.init(largura * cell_size, altura * cell_size)
@@ -54,33 +56,35 @@ class WireWorld:
                 x = pyxel.mouse_x // self.cell_size
                 y = pyxel.mouse_y // self.cell_size
                 if 0 <= x < self.largura and 0 <= y < self.altura:
-                    # alterna vazio <-> fio
-                    self.mundo[y][x] = FIO if self.mundo[y][x] == VAZIO else VAZIO
+                    # alterna entre os 4 estados
+                    self.mundo[y][x] = (self.mundo[y][x] + 1) % 4
 
         else:
             # MODO SIMULAÇÃO
-            novo_mundo = [[VAZIO for _ in range(self.largura)] for _ in range(self.altura)]
-            for y in range(self.altura):
-                for x in range(self.largura):
-                    cel = self.mundo[y][x]
-                    if cel == VAZIO:
-                        novo_mundo[y][x] = VAZIO
-                    elif cel == FIO:
-                        vizinhos = 0
-                        for dy in (-1, 0, 1):
-                            for dx in (-1, 0, 1):
-                                if dx == 0 and dy == 0:
-                                    continue
-                                nx, ny = x + dx, y + dy
-                                if 0 <= nx < self.largura and 0 <= ny < self.altura:
-                                    if self.mundo[ny][nx] == CABECA:
-                                        vizinhos += 1
-                        novo_mundo[y][x] = CABECA if vizinhos in (1, 2) else FIO
-                    elif cel == CABECA:
-                        novo_mundo[y][x] = CAUDA
-                    elif cel == CAUDA:
-                        novo_mundo[y][x] = FIO
-            self.mundo = novo_mundo
+            self.frame_count += 1
+            if self.frame_count % 10 == 0:  # só atualiza a cada 10 frames
+                novo_mundo = [[VAZIO for _ in range(self.largura)] for _ in range(self.altura)]
+                for y in range(self.altura):
+                    for x in range(self.largura):
+                        cel = self.mundo[y][x]
+                        if cel == VAZIO:
+                            novo_mundo[y][x] = VAZIO
+                        elif cel == FIO:
+                            vizinhos = 0
+                            for dy in (-1, 0, 1):
+                                for dx in (-1, 0, 1):
+                                    if dx == 0 and dy == 0:
+                                        continue
+                                    nx, ny = x + dx, y + dy
+                                    if 0 <= nx < self.largura and 0 <= ny < self.altura:
+                                        if self.mundo[ny][nx] == CABECA:
+                                            vizinhos += 1
+                            novo_mundo[y][x] = CABECA if vizinhos in (1, 2) else FIO
+                        elif cel == CABECA:
+                            novo_mundo[y][x] = CAUDA
+                        elif cel == CAUDA:
+                            novo_mundo[y][x] = FIO
+                self.mundo = novo_mundo
 
     def draw(self):
         pyxel.cls(0)
@@ -108,7 +112,7 @@ class WireWorld:
 
         # instruções
         if not self.modo_simulacao:
-            pyxel.text(5, 5, "EDICAO (clique p/ pintar, ESPACO play)", 7)
+            pyxel.text(5, 5, "EDICAO (clique p/ mudar estado, ESPACO play)", 7)
         else:
             pyxel.text(5, 5, "SIMULACAO (ESPAÇO pausa, R reset)", 7)
 
