@@ -1,7 +1,7 @@
 import pyxel
 import tkinter as tk
 from tkinter import filedialog
-import copy  # para copiar a matriz
+import copy 
 
 # Estados
 VAZIO = 0
@@ -106,7 +106,7 @@ class WireWorld:
             if pyxel.btnp(pyxel.KEY_E):
                 self.edit_mode = not self.edit_mode
 
-            # abrir o menu ao pressionar ESC
+            # abrir o menu ao pressionar apagar
             if pyxel.btnp(pyxel.KEY_BACKSPACE):
                 self.state = "menu"
                 self.edit_mode = False
