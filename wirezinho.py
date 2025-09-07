@@ -103,6 +103,13 @@ class WireWorld:
             if pyxel.btnp(pyxel.KEY_R):
                 self.reset()
 
+            if pyxel.btnp(pyxel.KEY_L):
+                self.grid = [[VAZIO for _ in range(self.width)] for _ in range(self.height)]
+                self.state_inicial = None
+                self.state = 'level'
+                self.mode = PAUSE
+                self.edit_mode = True
+
             if pyxel.btnp(pyxel.KEY_E):
                 self.edit_mode = not self.edit_mode
 
@@ -200,7 +207,7 @@ class WireWorld:
             pyxel.text(5, 5, f"Modo: {edit} | Estado: {status} | Speed: {21-self.speed}", 7)
 
             if self.mode==PAUSE:
-                pyxel.text(5, 15, "ESPACO: PAUSAR/PLAY | R: RESETAR | S: SALVAR | E: ATIVAR/DESATIVAR EDICAO | BACKSPACE: MENU", 7)
+                pyxel.text(5, 15, "\nESPACO: PAUSAR/PLAY | R: RESETAR | S: SALVAR \n\n" "E: ATIVAR/DESATIVAR EDICAO | BACKSPACE: MENU | L: LIMPAR MAPA", 7)
 
 class Menu:
     def __init__(self, cell_size):
