@@ -142,7 +142,16 @@ class WireWorld:
                     y = pyxel.mouse_y // self.cell_size
                     if 0 <= x < self.width and 0 <= y < self.height:
                         # alterna entre os 4 estados
-                        self.grid[y][x] = (self.grid[y][x] + 1) % 4
+                        self.painting = (self.grid[y][x] + 1) % 4
+                        self.grid[y][x] = self.painting
+                        self.state_inicial = copy.deepcopy(self.grid)
+
+                if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT):
+                    x = pyxel.mouse_x // self.cell_size
+                    y = pyxel.mouse_y // self.cell_size
+                    if 0 <= x < self.width and 0 <= y < self.height:
+                        # alterna entre os 4 estados
+                        self.grid[y][x] = (self.painting)
                         self.state_inicial = copy.deepcopy(self.grid)
 
             if self.mode == PLAY or self.mode == PAUSE and pyxel.btnp(pyxel.KEY_RIGHT):
